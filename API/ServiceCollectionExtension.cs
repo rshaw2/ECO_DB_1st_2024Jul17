@@ -1,5 +1,6 @@
 using ECODB1st2024Jul17.Services;
 using ECODB1st2024Jul17.Data;
+using VPC.WebApi.Utility;
 
 namespace ECODB1st2024Jul17
 {
@@ -541,6 +542,7 @@ namespace ECODB1st2024Jul17
             services.AddTransient<INotificationService, NotificationService>();
             services.AddTransient<IVisitMedicationService, VisitMedicationService>();
             services.AddTransient<IPackageSubscriptionService, PackageSubscriptionService>();
+            services.AddTransient<IJsonMessage, JsonMessage>();
             return services;
         }
     }

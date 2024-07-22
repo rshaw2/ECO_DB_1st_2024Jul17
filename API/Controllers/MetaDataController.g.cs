@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using YamlDotNet.Serialization;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
+using VPC.WebApi.Utility;
 
 namespace ECODB1st2024Jul17.Controllers
 {
@@ -16,7 +17,7 @@ namespace ECODB1st2024Jul17.Controllers
                                                                     */
     [Route("api/dynamic/meta-data")]
     [Authorize]
-    public class MetaDataController : BaseApiController
+    public class MetaDataController(IJsonMessage _jsonMessage) : BaseApiController
     {
         /// <summary>
         /// Retrieves and returns menu data
@@ -84,8 +85,8 @@ namespace ECODB1st2024Jul17.Controllers
             string layoutFilePath = $"./Layout/{entity}/{type}.yaml";
             var dynamicYaml = System.IO.File.ReadAllText(layoutFilePath);
             var deserializer =  new DeserializerBuilder().Build();
-            var yamlObject = deserializer.Deserialize<dynamic>(dynamicYaml);
-            return Ok(yamlObject);
+            var yamlObject = deserializer.Deserialize<List<Field>>(dynamicYaml);
+            return _jsonMessage.IgnoreNullableObject(yamlObject);
         }
 
         /// <summary>
@@ -121,7 +122,8 @@ namespace ECODB1st2024Jul17.Controllers
         public async Task<IActionResult> UpdateLayoutFile([FromRoute] string entityName, [FromBody] LayoutFileDetail fileDetail)
         {
             var projectRootPath = AppDomain.CurrentDomain.BaseDirectory;
-            var filePath = Path.Combine(string.Format("{0}/Layout/{1}/", projectRootPath, entityName), fileDetail.FileName);
+            // var filePath = Path.Combine(string.Format("{0}/Layout/{1}/", projectRootPath, entityName), fileDetail.FileName);
+            string filePath = $"./Layout/{entityName}/{fileDetail.FileName}";
             if (!System.IO.File.Exists(filePath))
             {
                 return BadRequest("Layout folder does not exist!");
